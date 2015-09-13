@@ -347,9 +347,11 @@ MotionPlannerGraph::shortest_path(size_t from, size_t to)
             {
                 double min_dist = -1;
                 for (std::set<node_t>::const_iterator n = Q.begin(); n != Q.end(); ++n) {
-                    if (dist[*n] < min_dist || min_dist == -1) {
+                    double heuristic_dist = dist[*n] + nodes[*n].distance_to(nodes[to]);
+
+                    if (heuristic_dist < min_dist || min_dist == -1) {
                         u = *n;
-                        min_dist = dist[*n];
+                        min_dist = heuristic_dist;
                     }
                 }
             }
