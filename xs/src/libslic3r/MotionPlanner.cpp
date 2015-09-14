@@ -325,6 +325,7 @@ MotionPlannerGraph::shortest_path(size_t from, size_t to)
     
     std::vector<weight_t> dist;
     std::vector<node_t> previous;
+    std::vector<double> distance_to_goal;
     {
         // number of nodes
         size_t n = this->adjacency_list.size();
@@ -336,6 +337,10 @@ MotionPlannerGraph::shortest_path(size_t from, size_t to)
         previous.clear();
         previous.resize(n, -1);
         
+        // compute Euclidean distance from all nodes to goal
+        distance_to_goal.resize(n, 0.0);
+        for (node_t i = 0; i < n; ++i) distance_to_goal[i] = nodes[i].distance_to(nodes[to]);
+
         // initialize the Q with all nodes
         std::set<node_t> Q;
         for (node_t i = 0; i < n; ++i) Q.insert(i);
@@ -347,7 +352,7 @@ MotionPlannerGraph::shortest_path(size_t from, size_t to)
             {
                 double min_dist = -1;
                 for (std::set<node_t>::const_iterator n = Q.begin(); n != Q.end(); ++n) {
-                    double heuristic_dist = dist[*n] + nodes[*n].distance_to(nodes[to]);
+                    double heuristic_dist = dist[*n] + distance_to_goal[*n];
 
                     if (heuristic_dist < min_dist || min_dist == -1) {
                         u = *n;
